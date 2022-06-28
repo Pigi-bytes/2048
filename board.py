@@ -21,11 +21,7 @@ class board:
                 print("")
             print(cell.value, end=" | ")
         print("\n" + "_"*14)
-        
-    def change_cell_value(self, ID, value):
-        cell = self.matrix[ID]
-        cell.value = value
-
+             
     def generate_new_case(self,):
         liste_empty_cell = [cell.id for cell in self.matrix if cell.value == 0]
         if len(liste_empty_cell) == 0: raise ("Game over")
@@ -37,7 +33,7 @@ class board:
         else:
             r_cell_value = 2
 
-        self.change_cell_value(r_cell_id, r_cell_value)
+        self.matrix[r_cell_id].value = r_cell_value
 
     def compress_vertical(self, direction):
         for row in range(self.sizeY):
@@ -88,20 +84,18 @@ while True:
     
     with keyboard.Events() as events:
         event = events.get()
+        os.system("cls")
+
         if event.key == keyboard.KeyCode.from_char('z'):
-            os.system("cls")
             game.compress_vertical('up')
 
         if event.key == keyboard.KeyCode.from_char('s'):
-            os.system("cls")
             game.compress_vertical('down')
 
         if event.key == keyboard.KeyCode.from_char('d'):
-            os.system("cls")
             game.compress_horizontal("left")
 
         if event.key == keyboard.KeyCode.from_char('q'):
-            os.system("cls")
             game.compress_horizontal("right")
 
 
