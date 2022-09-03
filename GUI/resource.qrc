@@ -1,0 +1,5 @@
+<RCC>
+  <qresource prefix="font">
+    <file>font/Nunito-Medium.ttf</file>
+  </qresource>
+</RCC>
