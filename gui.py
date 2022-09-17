@@ -5,7 +5,7 @@ import json
 
 from time import sleep
 from PyQt6 import uic, QtWidgets
-from PyQt5.QtCore import Qt
+from PyQt6.QtCore import Qt
 
 from constante import *
 
@@ -47,29 +47,22 @@ class board:
             self.best_score = json.load(f)["best_score"]
         
     def generate_matrix(self, liste_label, liste_frame):
-        self.matrix = []
-        for i in range(16):
-            self.matrix.append(Cell(i, liste_label[i], liste_frame[i]))
+        self.matrix = [Cell(i, liste_label[i], liste_frame[i]) for i in range(16)]
 
     def print_matrix(self,):
-        for cell in self.matrix:
-            cell.update()
+        for cell in self.matrix: cell.update()
 
     def generate_new_case(self,):
         liste_empty_cell = [cell.id for cell in self.matrix if cell.value == 0]
+        
         if len(liste_empty_cell) == 0:
             with open('data\score.json', 'w') as f:
-
                 json.dump({"best_score": self.best_score}, f)
             raise ("Game over")
 
-        r_cell_id = random.choice(liste_empty_cell)
-        r_cell_value = random.random()
-        if r_cell_value <= 0.1:
-            r_cell_value = 4
-        else:
-            r_cell_value = 2
 
+        r_cell_id = random.choice(liste_empty_cell)
+        r_cell_value = 4 if random.random() <= 0.1 else 2 # 0 < rando.random < 1 so 10% of luck
         self.matrix[r_cell_id].value = r_cell_value
 
     def compress_vertical(self, direction):
@@ -85,6 +78,7 @@ class board:
             line_gen = range(column, column+self.sizeY, 1)
             if direction == "left":
                 line_gen = reversed(line_gen)
+                
             self.compress_fusion(line_gen)
 
     def compress_fusion(self, liste_generator):
@@ -100,7 +94,6 @@ class board:
             if liste[right].value == 0:
                 right += 1
             else:
-
                 liste[left].value, liste[right].value = liste[right].value, liste[left].value
                 right += 1
                 left += 1
@@ -110,7 +103,6 @@ class board:
     def fusion(self, liste):
         for index in range(len(liste)-1):
             cell_0, cell_1 = liste[index], liste[index+1]
-
             if cell_0.value == cell_1.value:
                 cell_0.value *= 2
                 cell_1.value = 0
@@ -125,7 +117,7 @@ class board:
 class Ui_board(QtWidgets.QMainWindow):
     def __init__(self):
         super(Ui_board, self).__init__()
-        uic.loadUi("GUI/test.ui", self)
+        uic.loadUi("GUI/2048.ui", self)
 
         self.score = self.findChild(QtWidgets.QLabel, "label_score_nb")
         self.bscore = self.findChild(QtWidgets.QLabel, "label_bscore_nb")
@@ -150,22 +142,18 @@ class Ui_board(QtWidgets.QMainWindow):
     def keyPressEvent(self, event):
         key = event.key()
         
-        if key in (Qt.Key_Up, Qt.Key_Down, Qt.Key_Right, Qt.Key_Left):
-            if key == Qt.Key_Up:
-                self.game.compress_vertical('up')
-            elif key == Qt.Key_Down:
-                self.game.compress_vertical('down')
-            elif key == Qt.Key_Right:
-                self.game.compress_horizontal("left")
-            elif key == Qt.Key_Left:
-                self.game.compress_horizontal("right")
+        if key == Qt.Key.Key_Up.value:
+            self.game.compress_vertical('up')
+        elif key == Qt.Key.Key_Down.value:
+            self.game.compress_vertical('down')
+        elif key == Qt.Key.Key_Right.value:
+            self.game.compress_horizontal("left")
+        elif key == Qt.Key.Key_Left.value:
+            self.game.compress_horizontal("right")
 
-            self.game.generate_new_case()
-            self.game.print_matrix()
-            self.set_score()
-
-
-
+        self.game.generate_new_case()
+        self.game.print_matrix()
+        self.set_score()
 
 
 if __name__ == "__main__":
